@@ -14,13 +14,13 @@ This is Turborepo starter with shadcn/ui pre-configured.
 Clone the repository:
 
 ```sh
-git clone https://github.com/dan5py/turborepo-shadcn-ui.git
+git clone git@github.com:Parthvsquare/turbo-next-vite-schadcn.git
 ```
 
 Install dependencies:
 
 ```sh
-cd turborepo-shadcn-ui
+cd turbo-next-vite-schadcn
 pnpm install
 ```
 
@@ -40,7 +40,8 @@ This Turborepo includes the following packages/apps:
 
 ### Apps and Packages
 
-- `docs`: a [Next.js](https://nextjs.org/) app
+- `admin`: a [Next.js](https://nextjs.org/) app
+- `super-admin`: [Vite + React](https://vitejs.dev/)[Ant design](https://ant.design/) app
 - `web`: another [Next.js](https://nextjs.org/) app
 - `ui`: a stub React component library shared by both `web` and `docs` applications (🚀 powered by **shadcn/ui**)
 - `eslint-config-custom`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
@@ -61,7 +62,7 @@ This Turborepo has some additional tools already setup for you:
 To build all apps and packages, run the following command:
 
 ```sh
-cd turborepo-shadcn-ui
+cd turbo-next-vite-schadcn
 pnpm build
 ```
 
@@ -70,8 +71,14 @@ pnpm build
 To develop all apps and packages, run the following command:
 
 ```sh
-cd turborepo-shadcn-ui
+cd turbo-next-vite-schadcn
 pnpm dev
+```
+To develop a specific app or package, run the following command:
+
+```sh
+cd turbo-next-vite-schadcn
+make run-<app-name>
 ```
 
 ### Remote Caching
@@ -81,7 +88,7 @@ Turborepo can use a technique known as [Remote Caching](https://turbo.build/repo
 By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup), then enter the following commands:
 
 ```
-cd turborepo-shadcn-ui
+cd turbo-next-vite-schadcn
 npx turbo login
 ```
 
