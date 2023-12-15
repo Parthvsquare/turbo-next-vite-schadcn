@@ -41,7 +41,7 @@ This Turborepo includes the following packages/apps:
 ### Apps and Packages
 
 - `admin`: a [Next.js](https://nextjs.org/) app
-- `super-admin`: [Vite + React](https://vitejs.dev/)[Ant design](https://ant.design/) app
+- `super-admin`: [Vite + React](https://vitejs.dev/) and [Ant design](https://ant.design/) app
 - `web`: another [Next.js](https://nextjs.org/) app
 - `ui`: a stub React component library shared by both `web` and `docs` applications (🚀 powered by **shadcn/ui**)
 - `eslint-config-custom`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
