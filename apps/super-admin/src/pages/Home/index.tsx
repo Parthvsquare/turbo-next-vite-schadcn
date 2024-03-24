@@ -1,6 +1,14 @@
+import { authRoute } from '@/routes';
+import { createRoute } from '@tanstack/react-router';
 import { App, Card, Space, Typography } from 'antd';
 
 const { Text } = Typography;
+
+export const coinsRoute = createRoute({
+  getParentRoute: () => authRoute,
+  path: '/Coins',
+  component: Home,
+});
 
 function Home() {
   const { notification, modal } = App.useApp();

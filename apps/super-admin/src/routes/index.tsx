@@ -1,40 +1,148 @@
-import { lazy, useState } from 'react';
-import NotFound from '@/pages/NotFound';
 import HomeLayout from '@/Layout';
-import { Navigate, Route, Routes } from 'react-router-dom';
-import { Layout } from 'antd';
-import { useAtom } from 'jotai';
+import { loginRoute } from '@/pages/Login';
+import { QueryCache, QueryClient } from '@tanstack/react-query';
+import {
+  ErrorComponent,
+  Outlet,
+  RouterProvider,
+  createRootRouteWithContext,
+  createRoute,
+  createRouter,
+  redirect,
+} from '@tanstack/react-router';
+import { TanStackRouterDevtools } from '@tanstack/router-devtools';
+import { Layout, Spin } from 'antd';
+import modal from 'antd/es/modal';
+import { lazy } from 'react';
+import ReactJson from 'react-json-view';
+import { Auth, auth } from './types';
+import { coinsRoute } from '@/pages/Home';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
-import { userAuth } from '@/store';
-
-const Login = lazy(() => import('@/pages/Login'));
 const Home = lazy(() => import('@/pages/Home'));
 const AppHeader = lazy(() => import('@/components/AppHeader'));
 const AppSider = lazy(() => import('@/components/AppSideBar'));
 
+// Build our routes. We could do this in our component, too.
+export const rootRoute = createRootRouteWithContext<{
+  auth: Auth;
+  queryClient: QueryClient;
+}>()({
+  wrapInSuspense: true,
+  component: RootComponent,
+});
+
+function RootComponent() {
+  return (
+    <Layout style={{ height: '100vh' }}>
+      <AppSider />
+      <Layout className="site-layout">
+        <AppHeader />
+        <HomeLayout>
+          <Outlet />
+        </HomeLayout>
+      </Layout>
+      <TanStackRouterDevtools />
+    </Layout>
+  );
+}
+
+export const authRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  id: 'auth',
+  // Before loading, authenticate the user via our auth context
+  // This will also happen during prefetching (e.g. hovering over links, etc)
+  beforeLoad: ({ context, location }) => {
+    // If the user is logged out, redirect them to the login page
+    if (context.auth.status === 'loggedOut') {
+      throw redirect({
+        to: loginRoute.to,
+      });
+    }
+
+    // Otherwise, return the user in context
+    return {
+      username: auth.username,
+    };
+  },
+});
+
+const indexRoute = createRoute({
+  getParentRoute: () => authRoute,
+  path: '/',
+  component: Home,
+});
+
+const routeTree = rootRoute.addChildren([
+  authRoute.addChildren([indexRoute, coinsRoute]),
+  loginRoute,
+]);
+// Create a new router instance
+// const router = createRouter({ routeTree });
+const router = createRouter({
+  routeTree,
+  defaultPendingComponent: () => (
+    <div className={`mx-auto p-2 text-2xl`}>
+      <Spin />
+    </div>
+  ),
+  defaultErrorComponent: ({ error }) => <ErrorComponent error={error} />,
+  context: {
+    auth: undefined!, // We'll inject this when we render
+    queryClient: undefined!,
+  },
+  defaultPreload: 'intent',
+  // Since we're using React Query, we don't want loader calls to ever be stale
+  // This will ensure that the loader is always called when the route is preloaded or visited
+  defaultPreloadStaleTime: 0,
+});
+// Register the router instance for type safety
+declare module '@tanstack/react-router' {
+  interface Register {
+    router: typeof router;
+  }
+}
+
 // route name: bread crumb name
 
 const AppRouter = () => {
-  const [collapsed, setCollapsed] = useState(true);
-  const [isLoggedIn] = useAtom(userAuth);
-
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        refetchOnWindowFocus: false, // default: true
+        staleTime: 60 * 1000,
+      },
+      mutations: {
+        onError(err: any) {
+          console.log(`[MUTATION ERROR]: ${err}`);
+          modal.error({
+            title: 'Encountered an Error',
+            content: <ReactJson src={err} theme="monokai" />,
+            // onOk: () => navigate('/'),
+            width: '60vh',
+          });
+        },
+      },
+    },
+    queryCache: new QueryCache({
+      onError: (error, query) => {
+        if (query.state.data !== undefined) {
+          console.error(`[CACHE ERROR]: ${error}`);
+        }
+      },
+    }),
+  });
   return (
-    <Layout style={{ height: '100vh' }}>
-      {isLoggedIn && <AppSider collapsed={collapsed} />}
-      <Layout className="site-layout">
-        <AppHeader collapsed={collapsed} setCollapsed={setCollapsed} />
-        <Routes>
-          <Route path="/" element={isLoggedIn ? <HomeLayout /> : <Navigate to="login" />}>
-            <Route index element={<Home />} />
-          </Route>
-          <Route path="/" element={!isLoggedIn ? <Login /> : <Navigate to="/" />}>
-            <Route path="login" element={<Login />} />
-            <Route path="/" element={<Navigate to="/login" />} />
-          </Route>
-          <Route path="/*" element={isLoggedIn ? <NotFound /> : <Navigate to="/login" />} />
-        </Routes>
-      </Layout>
-    </Layout>
+    <>
+      <RouterProvider
+        router={router}
+        defaultPreload="intent"
+        context={{
+          auth,
+          queryClient: queryClient,
+        }}
+      />
+    </>
   );
 };
 

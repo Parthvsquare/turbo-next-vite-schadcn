@@ -1,35 +1,38 @@
-import packageJson from '../../../package.json';
-import { userAuth } from '@/store';
-import { UserOutlined } from '@ant-design/icons';
-import { MenuFoldOutlined, MenuUnfoldOutlined, LogoutOutlined } from '@ant-design/icons';
-import { App, Button, Dropdown, MenuProps, theme, Typography } from 'antd';
+import { rootRoute } from '@/routes';
+import { collapsedAtom } from '@/store';
+import {
+  LogoutOutlined,
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
+  UserOutlined,
+} from '@ant-design/icons';
+import { App, Button, Dropdown, MenuProps, Typography, theme } from 'antd';
 import Avatar from 'antd/es/avatar/avatar';
 import { Header } from 'antd/es/layout/layout';
 import { useAtom } from 'jotai';
+import { createElement, useState } from 'react';
+import packageJson from '../../../package.json';
 import './index.css';
-import React, { createElement, useEffect, useState } from 'react';
 
 const { Text } = Typography;
 
-interface IProps {
-  collapsed: boolean;
-  setCollapsed: (args: boolean) => void;
-}
-
-function AppHeader({ collapsed, setCollapsed }: IProps) {
+function AppHeader() {
   const {
     token: { colorFill },
   } = theme.useToken();
-  const [useAuth, setUserAuth] = useAtom(userAuth);
-  const [userName, setUserName] = useState('Loading....');
+
+  const { auth, status } = rootRoute.useRouteContext({
+    select: ({ auth }) => ({ auth, status: auth.status }),
+  });
+
   const [loading, setLoading] = useState(false);
-  const { notification } = App.useApp();
+  const [collapsed, setCollapsed] = useAtom(collapsedAtom);
 
   const items: MenuProps['items'] = [
     {
       key: 'signOut',
       label: (
-        <Button loading={loading} disabled={!useAuth} danger icon={<LogoutOutlined />}>
+        <Button loading={loading} disabled={status == 'loggedOut'} danger icon={<LogoutOutlined />}>
           Sign Out
         </Button>
       ),
@@ -51,7 +54,7 @@ function AppHeader({ collapsed, setCollapsed }: IProps) {
         onClick: () => setCollapsed(!collapsed),
       })}
       <div>
-        <Text strong>{userName}</Text>
+        <Text strong>{auth.username ?? 'Login'}</Text>
 
         <Dropdown menu={{ items }} trigger={['click']} placement="bottomLeft">
           <a onClick={(e) => e.preventDefault()}>

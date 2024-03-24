@@ -1,27 +1,42 @@
+import { rootRoute } from '@/routes';
+import { collapsedAtom } from '@/store';
 import { BarChartOutlined } from '@ant-design/icons';
+import { RootRoute, useNavigate } from '@tanstack/react-router';
 import { Menu, Typography, theme } from 'antd';
 import Sider from 'antd/es/layout/Sider';
+import { useAtom } from 'jotai';
 import { useMemo } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-
-interface IProps {
-  collapsed: boolean;
-}
 
 const { Text } = Typography;
 
-function AppSider({ collapsed }: IProps) {
+function AppSider() {
   const {
     token: { colorFill },
   } = theme.useToken();
 
-  const navigate = useNavigate();
-  const location = useLocation();
+  const [collapsed, setCollapsed] = useAtom(collapsedAtom);
 
-  const pathSnippets = useMemo(() => location.pathname.split('/').filter((i) => i), [location]);
+  const navigate = useNavigate({ from: '/' });
+
+  const { auth, status } = rootRoute.useRouteContext({
+    select: ({ auth }) => ({ auth, status: auth.status }),
+  });
+
+  // const location = useLocation();
+
+  const pathSnippets = useMemo(
+    () => window.location.pathname.split('/').filter((i) => i),
+    [location],
+  );
 
   function onClick(key: string) {
-    navigate(key);
+    navigate({
+      to: key,
+    });
+  }
+
+  if (auth.status === 'loggedOut') {
+    return null;
   }
 
   return (

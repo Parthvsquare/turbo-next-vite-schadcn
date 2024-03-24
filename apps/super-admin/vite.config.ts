@@ -6,6 +6,7 @@ import { dependencies } from './package.json';
 import { ValidateEnv } from '@julr/vite-plugin-validate-env';
 import jotaiDebugLabel from 'jotai/babel/plugin-debug-label';
 import jotaiReactRefresh from 'jotai/babel/plugin-react-refresh';
+import { TanStackRouterVite } from '@tanstack/router-vite-plugin';
 
 // https://sambitsahoo.com/blog/vite-code-splitting-that-works.html
 function renderChunks(deps: Record<string, string>) {
@@ -28,7 +29,8 @@ export default defineConfig({
     : {}),
   plugins: [
     react({ babel: { plugins: [jotaiDebugLabel, jotaiReactRefresh] } }),
-    htmlPlugin(loadEnv(process.env.NODE_ENV, '.')),
+    htmlPlugin(loadEnv(process.env.NODE_ENV || '', '.')),
+    TanStackRouterVite(),
     ValidateEnv(),
   ],
   server: {
