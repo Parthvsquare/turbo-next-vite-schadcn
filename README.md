@@ -1,4 +1,4 @@
-# Turborepo starter with shadcn/ui#
+# Turborepo starter with shadcn/ui
 
 ![Static Badge](https://img.shields.io/badge/shadcn%2Fui-latest-blue?link=https%3A%2F%2Fgithub.com%2Fshadcn%2Fui)
 
