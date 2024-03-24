@@ -1,8 +1,8 @@
 import HomeLayout from '@/Layout';
+import { coinsRoute } from '@/pages/Home';
 import { loginRoute } from '@/pages/Login';
 import { QueryCache, QueryClient } from '@tanstack/react-query';
 import {
-  ErrorComponent,
   Link,
   Outlet,
   RouterProvider,
@@ -12,13 +12,12 @@ import {
   redirect,
 } from '@tanstack/react-router';
 import { TanStackRouterDevtools } from '@tanstack/router-devtools';
-import { Button, Layout, Result, Spin } from 'antd';
+import { Layout, Result, Spin } from 'antd';
 import modal from 'antd/es/modal';
 import { lazy } from 'react';
 import ReactJson from 'react-json-view';
 import { Auth, auth } from './types';
-import { coinsRoute } from '@/pages/Home';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import NotFound from '@/pages/NotFound';
 
 const Home = lazy(() => import('@/pages/Home'));
 const AppHeader = lazy(() => import('@/components/AppHeader'));
@@ -31,18 +30,7 @@ export const rootRoute = createRootRouteWithContext<{
 }>()({
   wrapInSuspense: true,
   notFoundComponent(props) {
-    return (
-      <Result
-        status="404"
-        title="404"
-        subTitle="Sorry, the page you visited does not exist."
-        extra={
-          <Link type="primary" href="/login">
-            Back Home
-          </Link>
-        }
-      />
-    );
+    return <NotFound />;
   },
   component: RootComponent,
 });

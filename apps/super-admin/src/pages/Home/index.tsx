@@ -6,7 +6,7 @@ const { Text } = Typography;
 
 export const coinsRoute = createRoute({
   getParentRoute: () => authRoute,
-  path: '/Coins',
+  path: '/coins',
   component: Home,
 });
 

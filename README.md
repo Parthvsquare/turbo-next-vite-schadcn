@@ -39,7 +39,7 @@ This Turborepo includes the following packages/apps:
 ### Apps and Packages
 
 - `admin`: a [Next.js](https://nextjs.org/) app
-- `super-admin`: [Vite + React](https://vitejs.dev/) and [Ant design](https://ant.design/) app
+- `super-admin`: [Vite + React](https://vitejs.dev/) and [Ant design](https://ant.design/) app and using [tanstack router](https://tanstack.com/router/latest) and [jotai](https://jotai.org/) for state management
 - `web`: another [Next.js](https://nextjs.org/) app
 - `ui`: a stub React component library shared by both `web` and `docs` applications (🚀 powered by **shadcn/ui**)
 - `eslint-config-custom`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
@@ -72,6 +72,7 @@ To develop all apps and packages, run the following command:
 cd turbo-next-vite-schadcn
 pnpm dev
 ```
+
 To develop a specific app or package, run the following command:
 
 ```sh
