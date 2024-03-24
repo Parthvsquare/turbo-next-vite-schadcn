@@ -3,6 +3,7 @@ import { loginRoute } from '@/pages/Login';
 import { QueryCache, QueryClient } from '@tanstack/react-query';
 import {
   ErrorComponent,
+  Link,
   Outlet,
   RouterProvider,
   createRootRouteWithContext,
@@ -11,7 +12,7 @@ import {
   redirect,
 } from '@tanstack/react-router';
 import { TanStackRouterDevtools } from '@tanstack/router-devtools';
-import { Layout, Spin } from 'antd';
+import { Button, Layout, Result, Spin } from 'antd';
 import modal from 'antd/es/modal';
 import { lazy } from 'react';
 import ReactJson from 'react-json-view';
@@ -29,6 +30,20 @@ export const rootRoute = createRootRouteWithContext<{
   queryClient: QueryClient;
 }>()({
   wrapInSuspense: true,
+  notFoundComponent(props) {
+    return (
+      <Result
+        status="404"
+        title="404"
+        subTitle="Sorry, the page you visited does not exist."
+        extra={
+          <Link type="primary" href="/login">
+            Back Home
+          </Link>
+        }
+      />
+    );
+  },
   component: RootComponent,
 });
 
@@ -86,7 +101,17 @@ const router = createRouter({
       <Spin />
     </div>
   ),
-  defaultErrorComponent: ({ error }) => <ErrorComponent error={error} />,
+  defaultErrorComponent: ({ error }) => (
+    <Result
+      status="warning"
+      title="There are some problems with your operation."
+      extra={
+        <Link type="primary" key="console" href="/">
+          Go Console
+        </Link>
+      }
+    />
+  ),
   context: {
     auth: undefined!, // We'll inject this when we render
     queryClient: undefined!,
